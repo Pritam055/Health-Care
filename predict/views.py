@@ -61,6 +61,7 @@ def index(request):
             if i!="csrfmiddlewaretoken" and form_data.get(i)!="none":
                 user_symptoms.append(form_data.get(i)) 
         predicted_disease= "" 
+        print(user_symptoms)
         if len(user_symptoms)==0:
             predicted_disease = "No Symptom!"
             messages.success(request, "No Symptom!")
