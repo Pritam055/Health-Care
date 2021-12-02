@@ -1,8 +1,10 @@
+from typing import List
 from django.shortcuts import get_object_or_404, render
 import pandas as pd
 import random 
 from django.contrib import messages
 import pickle
+from django.views.generic import TemplateView, ListView
 
 from .models import Symptom, Disease
 # Create your views here.
@@ -97,6 +99,11 @@ def disease_detail(request, id):
     })
 
 
+class DiseaseListView(ListView):
+    template_name = "predict/all_disease.html"
+    model = Disease
+    context_object_name = "disease_list"
+    
 
 """ 
 # Used for creating disease dataset
