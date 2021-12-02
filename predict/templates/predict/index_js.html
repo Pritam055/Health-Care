@@ -30,8 +30,7 @@
         .then( (data) => {  
             predicted_data = data.data
             let output = ""
-            console.log(predicted_data) 
-            
+            // console.log(predicted_data) 
             counter = 0 
             predicted_data.forEach( function(d) { 
                 // style="position:absolute; left:0px; top:0px;"
@@ -48,27 +47,23 @@
                             </div>`; */
 
                     output += `<div class="destination item predicted">
-                        <div class="destination_image">
-                            <img src="../../static/images/health.jpg" alt="">`
-                        
-                    if (counter === 0){
+                                <div class="destination_image">
+                                    <img src="../../static/images/health.jpg" alt="">` 
+                    if (counter === 0)
+                    {
                         output += `<div class="spec_offer text-center"><a href="#">Max Possibility</a></div>`;
                         counter++;
-                    }
-                        
-                             
+                    }       
                     output += `</div> 
-                                <div class="destination_content" >
-                                    <div class="destination_title"><a href="fruits.html">${d.name.substring(0,25)}</a></div>
-                                    <div class="destination_subtitle"><p>${d.description.substring(0, 80)}...<a href="/disease/${d.id}/detail" style="color:skyblue;" target="_blank">more</p></div> 
-                                </div>
-                            </div>`;
-                    
+                                    <div class="destination_content" >
+                                        <div class="destination_title"><a href="fruits.html">${d.name.substring(0,25)}</a></div>
+                                        <div class="destination_subtitle"><p>${d.description.substring(0, 80)}...<a href="/disease/${d.id}/detail" style="color:skyblue;" target="_blank">more</p></div> 
+                                    </div>
+                                </div>`; 
                 
             });  
             document.getElementById("p_result").innerHTML = output ;
-            document.getElementById("home_search_form").reset();
-            
+            document.getElementById("home_search_form").reset(); 
             document.getElementById("go_here_id").click();
         })
         .catch( (err) => console.log(err) )

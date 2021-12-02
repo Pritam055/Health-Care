@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% load static %}
+
+{% block title %}
+All Disease
+{% endblock title %}
+
+{% block content %}
+
+<div class="container">
+    {% comment %} <h1>All Disease</h1>
+    <h3>Total diseaes count: {{ disease_list|length }}</h3> {% endcomment %}
+    
+	<!-- Predicted Disease -->
+
+	<div class="destinations" id="destinations">
+		<div class="container">
+			<div class="row">
+				<div class="col text-center">
+					<div class="section_subtitle">simply amazing tech</div>
+					<div class="section_title"><h2>All Disease</h2></div>
+                    <h3>Total Count: {{ disease_list|length }} </h3> 
+				</div>
+			</div>
+			<div class="row destinations_row">
+				<div class="col">
+					<div class="destinations_container item_grid" id="p_result">   
+
+						{% for disease in disease_list %}  
+							<div class="destination item">
+								<div class="destination_image">
+									<img src="{% static 'images/health.jpg' %}" alt=""> 
+								</div>
+								<div class="destination_content">
+									<div class="destination_title"><a href="fruits.html">{{ disease.name|truncatechars:25 }} </a></div>
+									<div class="destination_subtitle"><p>{{ disease.description|truncatechars:80 }}<a href="{% url 'predict:disease_detail' disease.id %}" style="color:skyblue;" target="_blank">more</a></p></div> 
+								</div>
+							</div> 
+						{% endfor %} 
+                        
+					</div>
+				</div>
+			</div>
+		</div>
+	</div> 
+</div>
+{% endblock %}
