@@ -32,8 +32,7 @@ def prediction(request):
             predicted_disease_description = list()
             for p in prediction2:
                 disease = Disease.objects.get(name = p[0]) 
-                predicted_disease_description.append({"id":disease.id, "name":disease.name, "description":disease.description,"percentage":p[1] }) 
-            
+                predicted_disease_description.append({"id":disease.id, "name":disease.name, "description":disease.description,"percentage":p[1] })  
             msg = {"msg":"success", "data": predicted_disease_description} 
         return JsonResponse(msg)
         # return Response(msg)

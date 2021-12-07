@@ -19,13 +19,13 @@
 <body>
 
 {% include "header.html" %}
-<div class="super_container">
+{% comment %} <div class="super_container"> {% endcomment %}
     {% block content %}
 
     {% endblock %}
 
 {% include "footer.html" %}
-</div>
+{% comment %} </div> {% endcomment %}
 
 
 <script src="{% static 'js/jquery-3.2.1.min.js' %}"></script>

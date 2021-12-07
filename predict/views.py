@@ -1,12 +1,19 @@
+import pickle
 from typing import List
-from django.shortcuts import get_object_or_404, render
 import pandas as pd
 import random 
-from django.contrib import messages
-import pickle
-from django.views.generic import TemplateView, ListView
 
-from .models import Symptom, Disease
+from django.shortcuts import get_object_or_404, render, redirect
+from django.contrib import messages
+from django.views.generic import TemplateView, ListView, UpdateView, View, CreateView
+from django.contrib.auth.decorators import login_required
+from django.utils.decorators import method_decorator
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.urls import reverse, reverse_lazy
+
+
+from .models import Symptom, Disease, Testimonial
+from .forms import DiseaseForm, TestimonialForm
 # Create your views here.
 
 # causing some problem in prediction
@@ -86,17 +93,20 @@ def index(request):
             predicted_disease_description.append({ "id":disease.id, "prevention": disease.prevention, "name":disease.name, "description":disease.description, "percentage":100})
    
     symptom_list = Symptom.objects.all().order_by("name") 
+    testimonials = Testimonial.objects.all().order_by("-modified")[:3]  
     return render(request, 'predict/index.html', {
         'symptom_list': symptom_list,
-        'predicted_disease_description': predicted_disease_description
+        'predicted_disease_description': predicted_disease_description,
+        'testimonials': testimonials
     })
 
 
 def disease_detail(request, id):
     disease = get_object_or_404(Disease, id=id) 
+    # print(request.user.is_superuser) 
     return render(request, "predict/detail.html", {
         "disease": disease
-    })
+    }) 
 
 
 class DiseaseListView(ListView):
@@ -104,6 +114,102 @@ class DiseaseListView(ListView):
     model = Disease
     context_object_name = "disease_list"
     
+class SuperUserMixins(object):
+    def dispatch(self, request,*args, **kwargs):
+        if request.user.is_superuser:
+            pass 
+        else: 
+            messages.success(request, "Only admin can update the details.")
+            print(request.path_info.split("/")[2])
+            return redirect( reverse("predict:disease_detail", args=[int(request.path_info.split("/")[2])] ))
+        return super().dispatch(request, *args, **kwargs)
+ 
+class DiseaseUpdateView(SuperUserMixins, View): 
+    def get(self, request, pk):
+        print(request.body)
+        disease = get_object_or_404(Disease, id=pk)
+        form = DiseaseForm(instance = disease) 
+        return render(request, 'predict/update.html', {
+            'form': form,
+            'disease_name': disease.name,
+            "d_id": pk            
+        })
+
+    def post(self, request, pk):
+        disease = get_object_or_404(Disease, id=pk)
+        form = DiseaseForm(instance = disease, data=request.POST)
+        form.save()
+        return redirect("predict:disease_detail" ,id= pk)
+
+""" Testimonials """
+class UserTestimonialMixin(object):
+
+    def dispatch(self, request, *args, **kwargs):
+        testmonial_id = request.path_info.split('/')[2]
+        testmonial = get_object_or_404(Testimonial, pk=testmonial_id)
+        if testmonial.user != request.user:
+            messages.success(request, "Only the author of testimonial is authorized to perform operation!")
+            return redirect("predict:testimonials")
+        return super().dispatch(request, *args, **kwargs)
+ 
+class TestimonialListView(LoginRequiredMixin, ListView):
+    login_url = "account:login" 
+    template_name = "predict/testimonials.html"
+    model = Testimonial
+    ordering = ["-modified",]
+    context_object_name = "testimonials"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        if len(Testimonial.objects.filter(user=self.request.user)) == 0:
+            context['show_testimonial_form'] = True 
+        else:
+            context['show_testimonial_form'] = False
+        return context 
+
+class TestimonialCreateView(View):
+    def get(self, request):
+        if len(Testimonial.objects.filter(user=self.request.user)) == 0:
+            return render(request, 'predict/testimonial_add.html', {'form': TestimonialForm() })
+        else:
+            messages.success(request, "\" You've already added testimonial. Now, you can only perform udpate and delete operations. \"")
+            return redirect("predict:testimonials")
+
+    def post(self, request):
+        form = TestimonialForm(request.POST)
+        if form.is_valid():
+            desc = form.cleaned_data["description"]
+            t = Testimonial(user = request.user, description = desc)
+            t.save()
+            messages.success(request, "Testimonial added successfully !!!")
+            return redirect("predict:testimonials")
+        else:
+            return render(request, 'predict/testimonial_add.html', {'form': form })
+
+class TestimonialEditView(UserTestimonialMixin, UpdateView):
+    template_name = "predict/testimonial_update.html"
+    form_class = TestimonialForm
+    pk_url_kwarg = 'pk'
+    model = Testimonial
+    success_url = reverse_lazy("predict:testimonials")
+
+    def form_valid(self, form): 
+        messages.success(self.request, "Testimonial updated successfully!!!")
+        super().form_valid(form)
+        return redirect('predict:testimonials')
+
+class TestimonialDeleteView(View):
+    def post(self, request, pk):
+        t = get_object_or_404(Testimonial, pk=pk)
+        if t:
+            if t.user != request.user:
+                messages.success(request, "Only the author of testimonial is authorized to perform operation!")
+                return redirect("predict:testimonials")
+            messages.success(request, "Your testimonial is deleted successfully. Now, you can add new one.")
+            t.delete()
+        return redirect("predict:testimonials")
+
+
 
 """ 
 # Used for creating disease dataset

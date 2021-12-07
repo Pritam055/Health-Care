@@ -81,11 +81,11 @@
 					<div class="home_search_container">
 						<div class="home_search_title">Choose the Symptoms</div> 
 						<div class="home_search_content">
-						{% if messages %}
+						{% comment %} {% if messages %}
 							{% for msg in messages %}
 								<div style="color:red;" >{{msg}}</div>
 							{% endfor %}
-						{% endif %}
+						{% endif %} {% endcomment %}
 							<form method="POST"  class="home_search_form" id="home_search_form">
 								{% csrf_token %}
 								<div class="d-flex flex-lg-row flex-column align-items-start justify-content-lg-between justify-content-start">
@@ -219,9 +219,9 @@
 							<div class="destination item">
 								<div class="destination_image">
 									<img src="{% static 'images/health.gif' %}" alt="">
-									{% if forloop.counter == 1%}
+{% comment %} 									{% if forloop.counter == 1%}
 										<div class="spec_offer text-center"><a href="#">Max Possibility</a></div>
-									{% endif %}
+									{% endif %} {% endcomment %}
 								</div>
 								<div class="destination_content">
 									<div class="destination_title"><a href="fruits.html">{{ disease.name|truncatechars:25 }} </a></div>
@@ -256,7 +256,19 @@
 					<div class="testimonials_slider_container">
 						<div class="owl-carousel owl-theme testimonials_slider">
 
-							<!-- Slide -->
+							{% for t in testimonials %}
+								<div class="owl-item text-center">
+									<div class="testimonial">{{ t.description|truncatechars:200 }}</div>
+									<div class="testimonial_author">
+										<div class="testimonial_author_content d-flex flex-row align-items-end justify-content-start">
+											<div >{{ t.user.username }}</div>
+											<div>user</div>
+										</div>
+									</div>
+								</div>
+							{% endfor %}
+
+							{% comment %} <!-- Slide -->
 							<div class="owl-item text-center">
 								<div class="testimonial">Lorem ipsum dolor sit amet, consectetur adipiscing elit. lobortis dolor. Cras placerat lectus a posuere aliquet. Curabitur quis vehicula odio.</div>
 								<div class="testimonial_author">
@@ -269,7 +281,7 @@
 
 							<!-- Slide -->
 							<div class="owl-item text-center">
-								<div class="testimonial">Lorem ipsum dolor sit amet, consectetur adipiscing elit. lobortis dolor. Cras placerat lectus a posuere aliquet. Curabitur quis vehicula odio.</div>
+								<div class="testimonial">Lorem   dolor sit amet, consectetur adipiscing elit. lobortis dolor. Cras placerat lectus a posuere aliquet. Curabitur quis vehicula odio.</div>
 								<div class="testimonial_author">
 									<div class="testimonial_author_content d-flex flex-row align-items-end justify-content-start">
 										<div>john turner,</div>
@@ -287,7 +299,7 @@
 										<div>client</div>
 									</div>
 								</div>
-							</div>
+							</div> {% endcomment %}
 
 						</div>
 					</div>
@@ -311,6 +323,7 @@
 				<div class="col-xl-8">
 					<div class="news_container">
 
+						
 						<!-- News Post -->
 						<div class="news_post d-flex flex-md-row flex-column align-items-start justify-content-start">
 							<div class="news_post_image" style="margin-top: -42px;"><img src="{% static 'images/health2.gif' %}" alt=""></div>

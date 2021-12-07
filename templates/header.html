@@ -10,16 +10,22 @@
 								<ul class="d-flex flex-row align-items-start justify-content-start">
 									<li class="active"><a href="{% url 'predict:index'%}">Home</a></li>
 									<li><a href="/">About us</a></li>
-									<li><a href="{% url 'predict:disease_list' %}">ALL disease</a></li>
-									<li><a href="/">News</a></li>
+									<li><a href="{% url 'predict:disease_list' %}">Diseases</a></li>
+									<!-- <li><a href="/">News</a></li> -->
 
 									{% if request.user.is_authenticated %}		
-										<li><a href="/">Feedback</a></li>
+										<li><a href="{% url 'predict:testimonials' %}">Testimonials</a></li>
 										<li><a href="{% url 'account:logout' %}">Logout</a></li>
+										<li style="color:black;"><b>User: </b>{{ request.user.username }}</li>
+									{% else %}
+										<li><a href="{% url 'account:login' %}">Login</a></li>
+										<li><a href="{% url 'account:register' %}">Register</a></li>
 									{% endif %}
+
+
 								</ul>
 							</nav>
-							<div class="header_phone ml-auto">Call us: **********</div>
+							{% comment %} <div class="header_phone ml-auto">Call us: **********</div> {% endcomment %}
 
 							<!-- Hamburger -->
 

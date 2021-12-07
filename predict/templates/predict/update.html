@@ -1,0 +1,32 @@
+{% extends "base.html" %} 
+
+{% block title %}
+Disease update
+{% endblock title %}
+
+{% block style %}
+<style>
+    p { color: black;}
+</style>
+{% endblock style %}
+{% block content %}
+
+<div class="container mb-3" style="margin-top: 100px;">
+     <h2><u>Update Disease</u></h2>
+     <p><h4>Disease name: {{ disease_name }}</h4></p>
+     <hr>
+    <form method="POST">
+        {% csrf_token %}
+
+        {% for f in form %}
+            <p><b>{{ f.label_tag }}</b><br>
+            {{ f }} {{ f.errors }}</p>
+            <br>
+        {% endfor %}
+        <input type="submit" value="Update" class="btn btn-success"> 
+        <a href="{% url 'predict:disease_detail' id=d_id  %}" class="btn btn-secondary">Cancel</a>
+
+        {{ request.urls }}
+    </form>
+</div>
+{% endblock %}

@@ -1,0 +1,51 @@
+{% extends "base.html" %}
+
+{% block title %}
+Disease detail
+{% endblock title %}
+
+{% block style %}
+<style>
+    p { color: black;}
+</style>
+{% endblock style %}
+
+{% block content %}
+
+<div class="container mb-3" style="margin-top: 110px;">    
+    <div class="row">
+        <div class="col-sm-8 mx-auto">
+            <h1>Testimonials</h1>
+            <hr>
+                {% if messages %}
+                    {% for message in messages %}
+                        <p style="color:green;">{{ message }}<p>
+                    {% endfor %}    
+                {% endif %}
+                {% if show_testimonial_form %}
+                    <a href="{% url 'predict:testimonial_add' %}" class="btn btn-primary">Add Testimonial</a>   
+                {% endif %}       
+
+               
+            <hr>
+                {% for t in testimonials %}
+                        <p><b style="color:black; font-size:18px;">{{ t.user.username.capitalize }}</b> on {{ t.created }} <br>
+                            Last modified: {{ t.modified }}
+                        </p>
+                        <p>{{ t.description|linebreaks }}<p>
+                        {% if request.user == t.user %} 
+                            <div style="display:flex">
+                                <a href="{% url 'predict:testimonial_update' pk=t.pk %}" class="btn btn-info">Edit</a>
+                                <form method="POST" action="{% url 'predict:testimonial_delete' pk=t.pk %}" class="mx-2"   >
+                                    {% csrf_token %}
+                                    <input type="submit" class="btn btn-danger"  value="delete"> 
+                                </form> 
+                            </div>
+                        {% endif %}
+                        <hr>     
+                {% endfor %}
+        </div>
+    </div>
+</div>
+
+{% endblock %}

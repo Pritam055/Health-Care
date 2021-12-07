@@ -1,0 +1,32 @@
+{% extends "base.html" %}
+
+{% block title %}
+Disease detail
+{% endblock title %}
+
+{% block style %}
+<style>
+    p { color: black;}
+</style>
+{% endblock style %}
+
+{% block content %}
+
+<div class="container mb-3" style="margin-top: 110px;">    
+    <div class="row">
+        <div class="col-sm-8 mx-auto">
+            <h2>Add Testimonial</h2>
+            <hr>  
+                <form method="POST">
+                    {% csrf_token %}
+                    {% for f in form %}
+                        <p>{{ f.label_tag }} {{ f }} {{ f.errors|striptags }}</p><br>
+                    {% endfor %}
+                    <input type="submit" class="btn btn-success" value="Add">  
+                    <a href="{% url 'predict:testimonials' %}" class="mx-2 btn btn-secondary">Cancel</a>
+                </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}

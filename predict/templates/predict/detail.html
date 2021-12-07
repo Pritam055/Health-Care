@@ -11,8 +11,14 @@ Disease detail
 {% endblock style %}
 {% block content %}
 
-<div class="container " style="margin-top: 100px;">
+<div class="container mb-3" style="margin-top: 110px;">
+    	{% if messages %}
+            {% for msg in messages %}
+                <div style="color:red;" >{{msg}}</div>
+            {% endfor %}
+        {% endif %}
     <h2 style="color: black;">{{ disease.name }}</h2>
+    <p><b>Last Reviewed:</b> {{ disease.modified }}</p>
     <p style="color: grey; margin-left: 20px;" >{{ disease.description }}</p>
     <hr>
     <h3 style="color: black;">Symptoms</h3>
@@ -22,7 +28,18 @@ Disease detail
         {% endfor %}
     </ol>
     <hr>
+    <h3 style="color: black;">Causes</h3>
+    <p>{{ disease.causes | linebreaks }}</p>
+    <hr>
     <h3 style="color: black;">Prevention</h3>
     <p>{{ disease.prevention | linebreaks }}</p>
+    <hr>
+    <h3 style="color: black;">Treatment</h3>
+    <p>{{ disease.treatment | linebreaks }}</p>
+    <hr> 
+
+    {% if request.user.is_superuser %}
+        <a href="{% url 'predict:disease_update' pk=disease.id %}" class="btn btn-info">Update</a> 
+    {% endif %}
 </div>
 {% endblock %}
