@@ -1,18 +1,17 @@
 from django.http import HttpResponse, JsonResponse
 from django.views.decorators import csrf
-from django.views.decorators.csrf import csrf_exempt
+# from django.views.decorators.csrf import csrf_exempt
 
-from rest_framework.response import Response 
+# from rest_framework.response import Response 
 from rest_framework.decorators import api_view
-from rest_framework.parsers import JSONParser
+# from rest_framework.parsers import JSONParser
 import io 
+import json 
 
 from .utility import make_prediction
-from predict.models import Disease
+from predict.models import Disease, History
 
 
-
-# @csrf_exempt
 @api_view(['POST'])
 def prediction(request):
     if request.method=="POST":
@@ -34,6 +33,17 @@ def prediction(request):
                 disease = Disease.objects.get(name = p[0]) 
                 predicted_disease_description.append({"id":disease.id, "name":disease.name, "description":disease.description,"percentage":p[1] })  
             msg = {"msg":"success", "data": predicted_disease_description} 
+
+            d = predicted_disease_description[0]
+            if request.user.is_authenticated: 
+                history_obj = History(
+                    user= request.user ,
+                    max_prob_disease = d['name'],
+                    percentage = d['percentage'],
+                    symptoms = json.dumps(python_data["data"])
+                )   
+                history_obj.save()
+                
         return JsonResponse(msg)
         # return Response(msg)
 

@@ -1,0 +1,35 @@
+
+<p style="font-family: 'Brush Script MT', cursive; font-size:28px;" class="mt-0">My Search Histories</p>
+<hr>
+<div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scope="col">Disease</th>
+          <th scope="col">Percentage</th>
+          <th scope="col">Date-Time</th>   
+          <th scope="col">Symptoms</th> 
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in  myhistory_list %}
+          <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{r.max_prob_disease}}</td>
+            <td>{{r.percentage}}%</td>
+            <td>{{r.date_time}}</td>    
+            <td>{{r.symptoms|truncatechars:50}}</td> 
+            <td>
+                <a href="{% url 'account:history_detail' r.id %}" id="historyDetailButtonId" style="cursor:pointer; " class="btn btn-info "  >Details</button>
+            </td>
+          </tr> 
+        {% empty %}  
+        <h3>My history is empty</h3>  
+        {% endfor %}
+      </tbody>
+    </table>
+
+
+</div> 

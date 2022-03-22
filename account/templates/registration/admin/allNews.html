@@ -1,0 +1,41 @@
+    <div class="mt-0">
+    <p style="font-family: 'Brush Script MT', cursive; font-size:28px; display:inline">All Health Care News</p>
+    <a href="{% url 'account:add_news' %}" class="btn btn-secondary" style="float:right;" id="addNewsButtonId">Add News</a>
+    
+    </div>
+  <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scopte="col">Title</th>
+            <th scope="col">Author</th>
+            <th scope="col">Created</th>
+            <th scope="col">Last Updated</th>   
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in  news_list %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td>{{r.title|truncatechars:30}}</td>
+              <td>{{r.author.username}}</td>
+              <td>{{r.created}}</td>
+              <td>
+                    {% if r.updated %}
+                        {{r.updated}}
+                    {% else %}
+                    - 
+                    {% endif %}
+             </td>    
+              <td>
+                  <a href="{% url 'news:news_detail' r.id %}"  style="cursor:pointer; " class="btn btn-info " target="_blank" >Details</button>
+              </td>
+            </tr>     
+          {% endfor %}
+        </tbody>
+      </table>
+  
+  
+  </div> 

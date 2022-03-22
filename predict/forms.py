@@ -22,5 +22,5 @@ class TestimonialForm(forms.ModelForm):
         model = Testimonial
         fields = ['description',]
         widgets = {
-            'description': forms.Textarea(attrs = {'cols': 100, 'rows':10, 'class': 'p-3'}),
+            'description': forms.Textarea(attrs = {'class': 'form-control', 'rows': 6}),
         }

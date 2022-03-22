@@ -15,14 +15,14 @@
             <h2><u>Update Testimonial</u></h2>
             <p><h4>By {{ request.user.username }}</h4></p>
             <hr>
-            <form method="POST">
+            <form method="POST" novalidate>
                 {% csrf_token %} 
                 {% for f in form %}
                     <p><b>{{ f.label_tag }}</b><br>
                     {{ f }} {{ f.errors }}</p>
                     <br>
                 {% endfor %}
-                <input type="submit" value="Update" class="btn btn-success"> 
+                <input type="submit" value="Update" class="btn btn-success" style="cursor:pointer;"> 
                 <a href="{% url 'predict:testimonials'  %}" class="btn btn-secondary mx-2">Cancel</a> 
             </form>
         </div>

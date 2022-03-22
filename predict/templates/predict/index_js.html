@@ -12,7 +12,7 @@
             } 
         }
         // console.log(e.target[2].value) 
-        console.log(selected_symptoms_lst)
+        // console.log(selected_symptoms_lst)
         if(selected_symptoms_lst.length==0){
             alert("Please select some symtpoms for prediction!")
             return false 
@@ -27,7 +27,7 @@
             body: JSON.stringify({ data: selected_symptoms_lst})
         })
         .then((resp) => resp.json())
-        .then( (data) => {  
+        .then( (data) => {   
             predicted_data = data.data
             let output = ""
             // console.log(predicted_data) 
@@ -58,13 +58,14 @@
                                     <div class="destination_content" >
                                         <div class="destination_title"><a href="fruits.html">${d.name.substring(0,25)}</a></div>
                                         <div class="destination_subtitle"><p>${d.description.substring(0, 80)}...<a href="/disease/${d.id}/detail" style="color:skyblue;" target="_blank">more</p></div> 
+                                        <div class="destination_price">${d.percentage}%</div>
                                     </div>
                                 </div>`; 
                 
             });  
-            document.getElementById("p_result").innerHTML = output ;
             document.getElementById("home_search_form").reset(); 
-            document.getElementById("go_here_id").click();
+            document.getElementById("go_here_id").click(); 
+            document.getElementById("p_result").innerHTML = output ;
         })
         .catch( (err) => console.log(err) )
     }

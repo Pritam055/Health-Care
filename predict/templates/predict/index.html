@@ -5,6 +5,7 @@
 {% endblock title %}
 
 {% block content %}
+
 	<!-- Header -->
 
 	<!-- Menu -->
@@ -46,7 +47,7 @@
 
 				<!-- Slide -->
 				<div class="owl-item">
-					<div class="background_image" style="background-image:url({% static 'images/healthcare.jpg'%})"></div>
+					<div class="background_image" style="background-image:url({% static '1.jpg'%})"></div>
 					<div class="home_slider_content_container">
 						<div class="container">
 							<div class="row">
@@ -64,9 +65,9 @@
 
 			<div class="home_page_nav">
 				<ul class="d-flex flex-column align-items-end justify-content-end">
-					<li><a href="#" data-scroll-to="#destinations">Diseases<span>01</span></a></li>
-					<li><a href="#" data-scroll-to="#testimonials">Feedbacks<span>02</span></a></li>
-					<li><a href="#" data-scroll-to="#news">Latest<span>03</span></a></li>
+					<li><a href="#" data-scroll-to="#destinations">Diseases<span>{{disease_count}}</span></a></li>
+					<li><a href="#" data-scroll-to="#testimonials">Testimonials<span>{{testimonials_count}}</span></a></li>
+					<!-- <li><a href="#" data-scroll-to="#news">Latest<span>03</span></a></li> -->
 				</ul>
 			</div>
 		</div>
@@ -152,6 +153,7 @@
 
 	<!-- Intro -->
 
+	{% comment %}
 	<div class="intro">
 		<div class="container">
 			<div class="row">
@@ -198,7 +200,7 @@
 			</div>
 		</div>
 	</div>
-
+	{% endcomment %}	
 	<!-- Predicted Disease -->
 
 	<div class="destinations" id="destinations">
@@ -212,20 +214,23 @@
 			<div class="row destinations_row">
 				<div class="col">
 					<div class="destinations_container item_grid" id="p_result">  
+						 
 
 					<!-- Below part is without using fetch api-->
 						{% for disease in predicted_disease_description %} 
 
-							<div class="destination item">
+							<div class="destination item  card-hover">
 								<div class="destination_image">
 									<img src="{% static 'images/health.gif' %}" alt="">
-{% comment %} 									{% if forloop.counter == 1%}
-										<div class="spec_offer text-center"><a href="#">Max Possibility</a></div>
-									{% endif %} {% endcomment %}
+									{% comment %} 									
+										{% if forloop.counter == 1%}
+											<div class="spec_offer text-center"><a href="#">Max Possibility</a></div>
+										{% endif %} 
+									{% endcomment %}
 								</div>
 								<div class="destination_content">
 									<div class="destination_title"><a href="fruits.html">{{ disease.name|truncatechars:25 }} </a></div>
-									<div class="destination_subtitle"><p>{{ disease.description|truncatechars:80 }}<a href="{% url 'predict:disease_detail' disease.id %}" style="color:skyblue;" target="_blank">more</a></p></div>
+									<div class="destination_subtitle"><p>{{ disease.description|truncatechars:80 }}<a href="{% url 'predict:disease_detail' disease.id %}" style="color:blue;" target="_blank">more</a></p></div>
 									{% comment %} <div class="destination_price">{{ disease.percentage }}% </div> {% endcomment %}
 								</div>
 							</div> 
@@ -306,6 +311,7 @@
 				</div>
 			</div>
 		</div>
+		{% comment %}
 		<div class="test_nav">
 			<ul class="d-flex flex-column align-items-end justify-content-end">
 				<li><a href="#">City Breaks Clients<span>01</span></a></li>
@@ -313,6 +319,7 @@
 				<li><a href="#">All Inclusive Patients<span>03</span></a></li>
 			</ul>
 		</div>
+		{% endcomment %}
 	</div>
 
 	<!-- News -->
@@ -414,5 +421,8 @@
 	<!-- Footer -->
  
 		{% include 'predict/index_js.html' %} 
+
+
+	{% include "footer.html" %}
 {% endblock %}
  

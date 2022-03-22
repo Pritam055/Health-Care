@@ -1,3 +1,4 @@
+from dis import dis
 import pickle
 from typing import List
 import pandas as pd
@@ -10,7 +11,8 @@ from django.contrib.auth.decorators import login_required
 from django.utils.decorators import method_decorator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse, reverse_lazy
-
+from django.http import JsonResponse
+from django.db.models import Q
 
 from .models import Symptom, Disease, Testimonial
 from .forms import DiseaseForm, TestimonialForm
@@ -40,7 +42,6 @@ from .forms import DiseaseForm, TestimonialForm
     # print(predicted_disease_precent_dict)
     return sorted(predicted_disease_precent_dict.items(), key=lambda x: x[1], reverse=True)  """
 
-
 def make_prediction(user_symptoms):
     symptom_list =  ["itching","skin_rash","nodal_skin_eruptions","dischromic _patches","continuous_sneezing","shivering","chills","watering_from_eyes","stomach_pain","acidity","ulcers_on_tongue","vomiting","cough","chest_pain","yellowish_skin","nausea","loss_of_appetite","abdominal_pain","yellowing_of_eyes","burning_micturition","spotting_ urination","passage_of_gases","internal_itching","indigestion","muscle_wasting","patches_in_throat","high_fever","extra_marital_contacts","fatigue","weight_loss","restlessness","lethargy","irregular_sugar_level","blurred_and_distorted_vision","obesity","excessive_hunger","increased_appetite","polyuria","sunken_eyes","dehydration","diarrhoea","breathlessness","family_history","mucoid_sputum","headache","dizziness","loss_of_balance","lack_of_concentration","stiff_neck","depression","irritability","visual_disturbances","back_pain","weakness_in_limbs","neck_pain","weakness_of_one_body_side","altered_sensorium","dark_urine","sweating","muscle_pain","mild_fever","swelled_lymph_nodes","malaise","red_spots_over_body","joint_pain","pain_behind_the_eyes","constipation","toxic_look_(typhos)","belly_pain","yellow_urine","receiving_blood_transfusion","receiving_unsterile_injections","coma","stomach_bleeding","acute_liver_failure","swelling_of_stomach","distention_of_abdomen","history_of_alcohol_consumption","fluid_overload","phlegm","blood_in_sputum","throat_irritation","redness_of_eyes","sinus_pressure","runny_nose","congestion","loss_of_smell","fast_heart_rate","rusty_sputum","pain_during_bowel_movements","pain_in_anal_region","bloody_stool","irritation_in_anus","cramps","bruising","swollen_legs","swollen_blood_vessels","prominent_veins_on_calf","weight_gain","cold_hands_and_feets","mood_swings","puffy_face_and_eyes","enlarged_thyroid","brittle_nails","swollen_extremeties","abnormal_menstruation","muscle_weakness","anxiety","slurred_speech","palpitations","drying_and_tingling_lips","knee_pain","hip_joint_pain","swelling_joints","painful_walking","movement_stiffness","spinning_movements","unsteadiness","pus_filled_pimples","blackheads","scurring","bladder_discomfort","foul_smell_of urine","continuous_feel_of_urine","skin_peeling","silver_like_dusting","small_dents_in_nails","inflammatory_nails","blister","red_sore_around_nose","yellow_crust_ooze"]
 
@@ -59,7 +60,7 @@ def make_prediction(user_symptoms):
     return prediction1
     # return automate_predicted_checking(prediction1, user_symptoms)  
      
-# --start----
+""" Starting """
 def index(request):  
     
     predicted_disease_description = list()
@@ -76,43 +77,53 @@ def index(request):
             messages.success(request, "No Symptom!")
         # elif len(user_symptoms)<=2:
         #     messages.success(request, "Select more than two symtpoms for prediction.")
-        else:
-            prediction2 = make_prediction(user_symptoms) 
-            print(prediction2)
+        else: 
+            prediction2 = make_prediction(user_symptoms)  
 
             for p in prediction2:
                 disease = Disease.objects.get(name = p[0])
                 predicted_disease_description.append({ "id":disease.id, "name":disease.name, "description":disease.description,"percentage":p[1] }) 
     else:
-        disease_list = Disease.objects.all()
-        id_lst = list()
-        for i in disease_list:
-            id_lst.append(i.id)
+        disease_id_list = list(Disease.objects.values('id'))
+
+        # disease_list = Disease.objects.all()
+        # id_lst = list()
+        # for i in disease_list:
+        #     id_lst.append(i.id)
+
         for i in range(6): 
-            disease = Disease.objects.get(id=random.choice(id_lst))
+            # disease = Disease.objects.get(id=random.choice(id_lst))
+            disease = Disease.objects.get(id = random.choice(disease_id_list)['id'])
             predicted_disease_description.append({ "id":disease.id, "prevention": disease.prevention, "name":disease.name, "description":disease.description, "percentage":100})
    
     symptom_list = Symptom.objects.all().order_by("name") 
-    testimonials = Testimonial.objects.all().order_by("-modified")[:3]  
+    testimonials = Testimonial.objects.all().order_by("-modified") 
     return render(request, 'predict/index.html', {
+        'disease_count': len(disease_id_list),
         'symptom_list': symptom_list,
         'predicted_disease_description': predicted_disease_description,
-        'testimonials': testimonials
+        'testimonials': testimonials[:3],
+        'testimonials_count': testimonials.count()
     })
 
-
+""" Disease part """
 def disease_detail(request, id):
-    disease = get_object_or_404(Disease, id=id) 
+    disease = get_object_or_404(Disease, id=id)
     # print(request.user.is_superuser) 
     return render(request, "predict/detail.html", {
         "disease": disease
     }) 
 
-
 class DiseaseListView(ListView):
     template_name = "predict/all_disease.html"
     model = Disease
     context_object_name = "disease_list"
+    paginate_by = 6
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['disease_count'] = Disease.objects.all().count
+        return context 
     
 class SuperUserMixins(object):
     def dispatch(self, request,*args, **kwargs):
@@ -141,7 +152,7 @@ class DiseaseUpdateView(SuperUserMixins, View):
         form.save()
         return redirect("predict:disease_detail" ,id= pk)
 
-""" Testimonials """
+""" Testimonials part """
 class UserTestimonialMixin(object):
 
     def dispatch(self, request, *args, **kwargs):
@@ -151,7 +162,7 @@ class UserTestimonialMixin(object):
             messages.success(request, "Only the author of testimonial is authorized to perform operation!")
             return redirect("predict:testimonials")
         return super().dispatch(request, *args, **kwargs)
- 
+  
 class TestimonialListView(LoginRequiredMixin, ListView):
     login_url = "account:login" 
     template_name = "predict/testimonials.html"
@@ -167,7 +178,7 @@ class TestimonialListView(LoginRequiredMixin, ListView):
             context['show_testimonial_form'] = False
         return context 
 
-class TestimonialCreateView(View):
+"""class TestimonialCreateView(View):
     def get(self, request):
         if len(Testimonial.objects.filter(user=self.request.user)) == 0:
             return render(request, 'predict/testimonial_add.html', {'form': TestimonialForm() })
@@ -184,7 +195,27 @@ class TestimonialCreateView(View):
             messages.success(request, "Testimonial added successfully !!!")
             return redirect("predict:testimonials")
         else:
-            return render(request, 'predict/testimonial_add.html', {'form': form })
+            return render(request, 'predict/testimonial_add.html', {'form': form })"""
+
+class TestimonialCreateView(View):
+    def get(self, request):
+        if len(Testimonial.objects.filter(user=self.request.user)) == 0:
+            return render(request, 'predict/add_testimonial.html', {'form': TestimonialForm() })
+       
+        messages.success(request, "\" You've already added testimonial. Now, you can only perform udpate and delete operations. \"")
+        return redirect("predict:testimonials")
+    
+    def post(self, request):
+        form = TestimonialForm(request.POST)
+        if form.is_valid():
+            desc = form.cleaned_data["description"]
+            t = Testimonial(user = request.user, description = desc)
+            t.save()
+            messages.success(request, "Testimonial added successfully !!!")
+            return JsonResponse({}, status=200)
+        else:
+            return JsonResponse({'errors': form.errors}, status=400)
+
 
 class TestimonialEditView(UserTestimonialMixin, UpdateView):
     template_name = "predict/testimonial_update.html"
@@ -209,6 +240,15 @@ class TestimonialDeleteView(View):
             t.delete()
         return redirect("predict:testimonials")
 
+
+""" Search """
+class DiseaseSearchView(View):
+
+    def get(self, request, *args, **kwargs):
+        search = request.GET.get('search') 
+        disease_list = Disease.objects.filter( Q(name__icontains=search) | Q(description__icontains=search))
+        
+        return render(request, 'predict/search_result.html', {'disease_list': disease_list})
 
 
 """ 

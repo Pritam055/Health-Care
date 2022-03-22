@@ -1,0 +1,34 @@
+{% extends "base.html" %}
+
+{% block title %}
+News Details
+{% endblock title %}
+
+{% block style %}
+<style>
+    p { color: black;}
+</style>
+{% endblock style %}
+{% block content %} 
+
+<div class="container mb-3" style="margin-top: 140px;">
+    <div class="row">
+        <div class="col-sm-8 mx-auto">
+            <a href="{% url 'news:home' %}" class="btn btn-secondary" style="padding-left:30px;padding-right:30px;">Back</a>
+            <h1 style="color: black;" class="mb-4">{{ post.title }}</h1>
+            <p>{{ post.created }}</p>
+            <hr>
+            {% if post.image %}
+                <img src="{{ post.image.url }}" style="height: 500px; width:100%;">
+            {% endif %}
+            <p style="font-size:12px">{{ post.content|linebreaks }}</p>
+            <hr>
+            <p><span style="color:black;">Author:</span> {{post.author.username.capitalize }}<p>
+            <p><span style="color:black;">Last modified:</span> {{ post.modified }} </p>
+
+        </div>
+    </div>
+</div>
+
+{% include "footer.html" %}
+{% endblock %}

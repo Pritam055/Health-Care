@@ -9,14 +9,19 @@
 							<nav class="main_nav">
 								<ul class="d-flex flex-row align-items-start justify-content-start">
 									<li class="active"><a href="{% url 'predict:index'%}">Home</a></li>
-									<li><a href="/">About us</a></li>
-									<li><a href="{% url 'predict:disease_list' %}">Diseases</a></li>
-									<!-- <li><a href="/">News</a></li> -->
+ 									<li><a href="{% url 'predict:disease_list' %}">Diseases</a></li>
+									<li><a href="{% url "news:home" %}">News</a></li>
 
 									{% if request.user.is_authenticated %}		
 										<li><a href="{% url 'predict:testimonials' %}">Testimonials</a></li>
 										<li><a href="{% url 'account:logout' %}">Logout</a></li>
-										<li style="color:black;"><b>User: </b>{{ request.user.username }}</li>
+										<li>
+											<a href="{% url 'account:myprofile' %}" style=" text-decoration: none;"> 
+												<img style="height: 30px; width: 30px; border-radius: 20px;" src="{% static 'default_image.jpg' %}" alt="">
+												<b>{{request.user.username}}</b>
+											</a>
+										</li>
+										{% comment %}<li style="color:black;"><b>User: </b>{{ request.user.username }}</li> {% endcomment %}
 									{% else %}
 										<li><a href="{% url 'account:login' %}">Login</a></li>
 										<li><a href="{% url 'account:register' %}">Register</a></li>
@@ -39,13 +44,10 @@
 			</div>
 		</div>
 		<div class="header_social d-flex flex-row align-items-center justify-content-start">
-			<ul class="d-flex flex-row align-items-start justify-content-start">
-				<li><a href="#"><i class="fa fa-pinterest" aria-hidden="true"></i></a></li>
-				<li><a href="#"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
-				<li><a href="#"><i class="fa fa-twitter" aria-hidden="true"></i></a></li>
-				<li><a href="#"><i class="fa fa-dribbble" aria-hidden="true"></i></a></li>
-				<li><a href="#"><i class="fa fa-behance" aria-hidden="true"></i></a></li>
-				<li><a href="#"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
+			<ul class="d-flex flex-row align-items-start justify-content-start"> 
+				<li><a href="https://facebook.com" target="_blank"><i class="fa fa-facebook" aria-hidden="true"></i></a></li>
+				<li><a href="https://twitter.com" target="_blank"><i class="fa fa-twitter" aria-hidden="true"></i></a></li> 
+				<li><a href="https://linkedin.com/" target="_blank"><i class="fa fa-linkedin" aria-hidden="true"></i></a></li>
 			</ul>
 		</div>
 	</header>

@@ -1,0 +1,33 @@
+<div class="modal-header"> 
+    <p style="font-family: 'Brush Script MT', cursive; font-size:26px; display: inline; " >One History Detail</p>
+</div>   
+<div class="modal-body"> 
+    <table class="table table-striped">
+        <tbody>
+            <tr>
+                <th scope="row">User</th>
+                <td>{{history.user.username}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Disease Name</th>
+                <td>{{history.max_prob_disease}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Percentage</th>
+                <td>{{history.percentage}}%</td>
+            </tr>
+            <tr>
+                <th scope="row">Prediction date_time</th>
+                <td>{{history.date_time}}</td>
+            </tr>
+            <tr>
+                <th scope="row">Symptoms</th>
+                <td>{{history.symptoms}}</td>
+            </tr> 
+        </tbody> 
+    </table>
+    
+</div>
+<div class="modal-footer"> 
+    <button type="button" onclick="closeModal()" style="cursor:pointer;" class="btn btn-danger " data-bs-dismiss="modal" style="padding-left: 40px; padding-right: 40px;">Close</button>
+</div> 

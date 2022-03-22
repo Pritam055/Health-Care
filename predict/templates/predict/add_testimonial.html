@@ -1,0 +1,20 @@
+
+<form method="post" id="testimonialFormId" action="{% url 'predict:testimonial_add' %}" novalidate >
+    <div class="modal-header"> 
+        <p style="font-family: 'Brush Script MT', cursive; font-size:26px; display: inline; " >Add Testimonial</p>
+    </div>  
+    {% csrf_token %}
+    
+    <div class="modal-body">
+    {% for f in form %}
+        <div class="mb-3">
+            {{f.label_tag}} {{f}}
+        </div>
+    {% endfor %}
+    </div>
+
+    <div class="modal-footer">
+        <input type="submit" class="btn btn-success" value="Add" style="padding-left: 25px; padding-right: 25px;">
+        <button type="button" onclick="closeModal()" class="btn btn-secondary" data-bs-dismiss="modal" style="cursor: pointer;">Cancel</button>
+    </div>
+</form>

@@ -26,7 +26,8 @@ SECRET_KEY = 'django-insecure-ym8(x9fdic%s-p$p9bqbzp+uj9h0y$43z-zmgqec&e!a&uyo3g
 DEBUG = True
 
 ALLOWED_HOSTS = []
-
+# ALLOWED_HOSTS = ['127.0.0.1', '192.168.186.205',]
+# ALLOWED_HOSTS = [ '192.168.186.205',]
 
 # Application definition
 
@@ -39,7 +40,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'predict',
-    'account'
+    'account',
+    'news',
 ]
 
 MIDDLEWARE = [

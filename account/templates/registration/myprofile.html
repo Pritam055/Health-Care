@@ -1,0 +1,408 @@
+{% extends "base.html" %} 
+{% load static %}
+
+{% block title %} Profile {% endblock title %}
+
+{% block content %} 
+<div class="container-fluid" style="margin-top: 115px; width: 75%;">
+    <div class="row">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+        <div class="position-sticky pt-3">
+          <ul class="nav flex-column">
+            <li class="nav-item">
+              <a class="nav-link"  href="{% url 'account:myprofile' %}">
+                My Profile
+              </a>
+            </li>  
+            <li class="nav-item">
+              <a class="nav-link" href="{% url 'account:myhistory' %}" id="myHistoryId"> 
+                My History
+              </a>
+            </li>  
+            </ul>
+            
+            {% if request.user.is_superuser %}
+            <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
+              <span>Saved reports</span> 
+            </h6>
+            <ul class="nav flex-column mb-2">
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'account:all_disease' %}" id="allDiseaseId"> 
+                  All Diseases
+                </a>
+              </li> 
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'account:all_histories' %}" id="allHistoryId"> 
+                  All Histories
+                </a>
+              </li> 
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'account:history_report' %}" id="allReportId"> 
+                  Report
+                </a>
+              </li> 
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'account:all_news' %}" id="allNewsId"> 
+                  All News
+                </a>
+              </li> 
+            </ul>
+          {% endif %}
+            
+        </div>
+      </nav>
+  
+      <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+        <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+          <div class="btn-toolbar mb-2 mb-md-0">
+            
+          </div>
+        </div> 
+        <div class="container" style="width: 100%;">
+            {% if messages %}
+                {% for message in messages %}
+                    <p class="alert alert-{% if message.tags %}{{message.tags}}{%else%}info{% endif %}">{{ message }}</p>
+                {% endfor %}
+            {% endif %}
+            <div class=" mb-3" id="dataContainerId">
+                <p style="font-family: 'Brush Script MT', cursive; font-size:35px; color:black">My Profile</p>
+                <hr> 
+                <div class="row">
+                    <div class="col-lg-6 border " style="text-align: center; padding: 30px;">
+                        <img  class="rounded-circle" src="{% static 'default_image.jpg' %}" height="250px" width="250px" >
+                    </div>
+                    <div class="col-lg-6 border" style="padding:30px; ">
+                        <p>Username: <b>{{ request.user.username }}</b></p>
+                        <p>First Name: <b>{{ request.user.first_name }}</b></p>
+                        <p>Last Name: <b>{{ request.user.last_name }}</b></p>   
+                        <p>Email: <b>{{ request.user.email }}</b></p> 
+                        <p>User type: 
+                          {% if request.user.is_superuser %}
+                            <span class="badge bg-primary text-light">Admin user</span>
+                          {% else %} 
+                            <span class="badge bg-success text-light">Normal User</span>
+                          {% endif %}
+
+                        </p>
+                        <p><a href="{% url 'account:update_user' %}" id="updateUserButtonId" class="btn btn-info">Update Info</a></p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+        
+      </main>
+    </div>
+  </div>
+  
+  <div class="modal fade" id="historyDetailModelId" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content"></div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="newsAddModelId" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content"></div>
+    </div>
+  </div>
+  <div class="modal fade" id="updaetUserModalId" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content"></div>
+    </div>
+  </div>
+ 
+{% block script %}
+<script>
+function closeModal(){
+  $('.modal').modal('hide');
+}
+
+
+// --------------update details
+$('body').on('click', '#updateUserButtonId', function(e){
+    e.preventDefault();
+    const url = $(this).attr('href');
+    
+    $.get(url, function(response){ 
+        $('#updaetUserModalId .modal-content').empty().append(response);
+        $('#updaetUserModalId').modal('show');
+
+    })
+}) 
+
+
+$('body').on('submit', '#updateUserFormId', function(e){
+    e.preventDefault();
+    const formData = new FormData(this);
+    const url = $(this).attr('action');
+
+    $.ajax({
+      method: "POST",
+      url: url,
+      data: formData,
+      processData: false,
+      contentType:false,
+
+      success: function(response){ 
+        location.reload()
+      },
+      error: function(response){
+          data = JSON.parse(response['responseText']);
+          errors = data['errors'];
+
+          const array = ['first_name','last_name','email'];
+          array.forEach(function (item, index) {
+
+            if ( $(`#${item}Error`).length > 0){
+              $(`#${item}Error`).remove(); 
+            }  
+            if(errors[item]){
+              $(`[name=${item}]`).parent().append($(`<span style="color:red" id="${item}Error">${errors[item]}</span>`));
+            }
+
+          }) 
+      } 
+        
+    })
+})
+
+// ----------all Disease
+
+$('#allDiseaseId').on('click', function(e){
+    e.preventDefault();  
+    
+    $.get($(this).attr('href'), function(response){
+        $('#dataContainerId').empty().append(response);
+    });
+})
+
+
+// ---------history part
+
+$('body').on('click', '#historyDetailButtonId', function(e){
+    e.preventDefault();
+    const url = $(this).attr('href');
+    
+    $.get(url, function(response){ 
+        $('#historyDetailModelId .modal-content').empty().append(response);
+        $('#historyDetailModelId').modal('show');
+
+    })
+}) 
+$('#myHistoryId').on('click', function(e){
+    e.preventDefault(); 
+    const href = $(this).attr('href');
+
+    $.get(href, function(response){
+        $('#dataContainerId').empty().append(response);
+    });
+})
+
+$('#allHistoryId').on('click', function(e){
+    e.preventDefault();  
+    
+    $.get($(this).attr('href'), function(response){
+        $('#dataContainerId').empty().append(response);
+    });
+})
+
+// ----------Admin all news
+$('#allNewsId').on('click', function(e){
+    e.preventDefault(); 
+    const href = $(this).attr('href');
+
+    $.get(href, function(response){
+        $('#dataContainerId').empty().append(response);
+    });
+}) 
+
+$('body').on('click', '#addNewsButtonId', function(e){
+    e.preventDefault();
+    const url = $(this).attr('href');
+    
+    $.get(url, function(response){ 
+        $('#newsAddModelId .modal-content').empty().append(response);
+        $('#newsAddModelId').modal('show');
+
+    })
+})
+
+$('body').on('submit', '#addNewsFormId', function(e){
+    e.preventDefault();
+    const formData = new FormData(this);
+    const url = $(this).attr('action');
+
+    $.ajax({
+      method: "POST",
+      url: url,
+      data: formData,
+      processData: false,
+      contentType:false,
+
+      success: function(response){
+
+        // if(response.status == 400){
+        //   console.log(response.errors)
+        //   $.each(response.errors, function(index, value){
+        //     console.log( $(`#${index}Error`).length )
+        //     $('#id_'+index).closest('div').append(`<span style="color:red; font-weight:bold;" id="#${index}Error">${value[0]}</span>`);
+        //   })
+        // } 
+
+
+        // $('#newsAddModelId .modal-content').empty().append(response);
+        // $('#newsAddModelId').modal('show');
+
+        location.reload()
+
+      },
+      error: function(response){
+          data = JSON.parse(response['responseText']);
+          errors = data['errors'];
+
+          const array = ['title','content', 'image'];
+          array.forEach(function (item, index) {
+
+            if ( $(`#${item}Error`).length > 0){
+              $(`#${item}Error`).remove(); 
+            }  
+            if(errors[item]){
+              $(`[name=${item}]`).parent().append($(`<span style="color:red" id="${item}Error">${errors[item]}</span>`));
+            }
+
+          })
+
+      }
+       
+        
+    })
+})
+
+
+//------------Graph report part
+
+function random_rgba() {
+    var o = Math.round, r = Math.random, s = 255;
+    return 'rgba(' + o(r()*s) + ',' + o(r()*s) + ',' + o(r()*s) +  ',' + 0.6 + ')';
+}
+
+
+$('#allReportId').on('click',function(e){
+  e.preventDefault(); 
+
+  $.get($(this).attr('href'), function(response){ 
+      let data = {};
+ 
+      $.each(response['history_list'], function(index, value){ 
+        data[value['date_time__date']] = value['id__count']
+      }) 
+      // console.log(Object.keys(data))
+      // console.log(Object.values(data))
+
+      let output = `<div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-2 border-bottom">
+                      <p style="font-family: 'Brush Script MT', cursive; font-size:28px; display: inline;" >All Prediction Report</p>
+              
+                      <div class="btn-toolbar mb-1 mb-md-0" >
+                        <form  id="pdfGenFormId" method="get" action="{% url 'account:pdf_report_gen' %}" target="_blank"  >
+                          <input type="submit" class="btn btn-outline-secondary mx-2" value="Generate PDF">
+
+                          <label  class="mx-2" for="fromDate">From:</label>
+                          <input type="date"  id="fromDate" name="fromDate">
+                          
+                          <label class="mx-2" for="toDate">To:</label>
+                          <input type="date" id="toDate" name="toDate">
+
+                        </form>
+                      </div>  
+                  </div> 
+                    <hr>
+                  <div class="row">   
+                    <div class="col-sm-12 mt-3 mb-2 mx-auto"  >
+                      <div class="card card-hover"  style="text-align: center; border-radius: 12px;" >
+                        <p style="font-family: 'Brush Script MT', cursive; font-size:20px; display: inline;"  >Reservations Line Chart</p>
+                        <div class="chart-container" style="width:100%">  
+                          <canvas id="myReservationLineChart"  ></canvas>
+                        </div>
+                      </div>
+                    </div> 
+                </div>
+                `;
+
+      $('#dataContainerId').empty().append(output);
+
+      bgColor =[] ;
+      for(let i=0; i < Object.keys(data).length; i++){
+        bgColor.push( random_rgba() );
+      }  
+
+      const ctx2 = document.getElementById('myReservationLineChart');
+      const myLineChart = new Chart(ctx2, {
+        type: 'line',
+        data: {
+            labels: Object.keys(data),
+            datasets: [{
+                label: '# of predictions',  
+                data: Object.values(data) ,
+                backgroundColor: bgColor,
+                hoverOffset: 4, 
+            }],
+          },  
+          //HERE COMES THE AXIS Y LABEL
+          options: {
+            scales: {
+              x: { title: { display: true, text: 'History Dates' }},
+              y: { title: { display: true, text: 'History Count' }},
+            }
+          }
+      });  
+
+
+  });
+
+})
+ 
+
+$('body').on('submit','#pdfGenFormId', function(e){
+  e.preventDefault();
+  const formData = new FormData(this)
+
+  let data = {} 
+  for(let i of formData.entries()){
+    data[i[0]] = i[1];
+  } 
+  const url = $(this).attr('action');
+  const redirect_url = location.origin + url+"?fromDate="+data['fromDate']+"&toDate="+data['toDate'];
+   
+  $.ajax({
+    url: url,
+    method: 'GET', 
+    data: data, 
+    
+    success: function(response){ 
+      if(response.status==200){ 
+
+        const first_validation_error = response['errors']['__all__'][0];
+        // $.each(response['errors'], function(index, value){
+        //   console.log(value);
+        //   console.log(typeof value)
+        // }) 
+        alert(first_validation_error);
+
+      }else{
+        window.open(redirect_url,'_blank');
+      }
+    },
+    error: function(err){ 
+      alert(err);
+    }
+  });
+  
+})
+
+
+</script>
+
+{% endblock %}
+ 
+{% endblock %}

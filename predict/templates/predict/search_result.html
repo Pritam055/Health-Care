@@ -1,0 +1,14 @@
+{% load static %}
+<!-- <div class="col mx-auto"> -->
+    {% for disease in disease_list %}  
+        <div class="destination item card-hover">
+            <div class="destination_image">
+                <img src="{% static 'images/health.gif' %}" alt=""> 
+            </div>
+            <div class="destination_content">
+                <div class="destination_title"><a href="{% url 'predict:disease_detail' disease.id %}" target="_blank">{{ disease.name|truncatechars:25 }} </a></div>
+                <div class="destination_subtitle"><p>{{ disease.description|truncatechars:80 }}<a href="{% url 'predict:disease_detail' disease.id %}" style="color:blue;" target="_blank">more</a></p></div> 
+            </div>
+        </div> 
+    {% endfor %} 
+<!-- </div> -->

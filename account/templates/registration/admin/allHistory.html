@@ -1,0 +1,56 @@
+<div class="row">
+            
+  <div class="col-sm-6 mb-2"  >
+    <div class="card card-hover" id="card1" style="text-align: center; border-radius: 12px;" >
+         <p style="font-family: 'Brush Script MT', cursive; font-size:28px; display: inline;" class="text-primary">Total History Count</p>
+        <div class="card-body"> 
+          <p style="font-family: 'Brush Script MT', cursive; font-size:24px; display: inline;" >{{history_list.count}}</p>
+        </div>
+    </div>
+  </div> 
+
+  <div class="col-sm-6 mb-2"  >
+    <div class="card card-hover" id="card1" style="text-align: center; border-radius: 12px;" >
+         <p style="font-family: 'Brush Script MT', cursive; font-size:28px; display: inline;" class="text-success" >Today's History Count</p>
+        <div class="card-body"> 
+          <p style="font-family: 'Brush Script MT', cursive; font-size:24px; display: inline;" >{{today_count}}</p>
+        </div>
+    </div>
+  </div> 
+
+</div>
+
+<p style="font-family: 'Brush Script MT', cursive; font-size:28px;">All Prediction Histories</p>
+ 
+<div class="table-responsive">
+    <table class="table table-striped">
+      <thead>
+        <tr>
+          <th scope="col">#</th>
+          <th scopte="col">User</th>
+          <th scope="col">Disease</th>
+          <th scope="col">Percentage</th>
+          <th scope="col">Date-Time</th>   
+          <th scope="col">Symptoms</th> 
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in  history_list %}
+          <tr>
+            <td>{{forloop.counter}}</td>
+            <td>{{r.user}}</td>
+            <td>{{r.max_prob_disease}}</td>
+            <td>{{r.percentage}}%</td>
+            <td>{{r.date_time}}</td>    
+            <td>{{r.symptoms|truncatechars:30}}</td> 
+            <td>
+                <a href="{% url 'account:history_detail' r.id %}" id="historyDetailButtonId" style="cursor:pointer; " class="btn btn-info "  >Details</button>
+            </td>
+          </tr>     
+        {% endfor %}
+      </tbody>
+    </table>
+
+
+</div> 

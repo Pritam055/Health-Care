@@ -20,7 +20,6 @@ class  NaiveBayes:
         self.num_feats = int
 
     def fit(self, X, y):
-
         self.features = list(X.columns)
         self.X_train = X
         self.y_train = y

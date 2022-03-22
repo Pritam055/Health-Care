@@ -1,0 +1,32 @@
+<div class="mt-0">
+    <p style="font-family: 'Brush Script MT', cursive; font-size:28px; display:inline">Diseases List</p> 
+    
+    </div>
+  <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scopte="col">Name</th>
+            <th scope="col">Created</th>
+            <th scope="col">Last Modified</th>  
+            <th></th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in  disease_list %}
+            <tr>
+              <td>{{forloop.counter}}</td>
+              <td>{{r.name}}</td>
+              <td>{{r.created}}</td>
+              <td>{{r.modified}}</td>   
+              <td>
+                  <a href="{% url 'predict:disease_detail' r.id %}"  style="cursor:pointer; " class="btn btn-info " target="_blank" >Details</button>
+              </td>
+            </tr>     
+          {% endfor %}
+        </tbody>
+      </table>
+  
+  
+  </div> 
