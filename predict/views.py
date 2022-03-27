@@ -1,4 +1,4 @@
-from dis import dis
+
 import pickle
 from typing import List
 import pandas as pd
@@ -109,9 +109,10 @@ def index(request):
 """ Disease part """
 def disease_detail(request, id):
     disease = get_object_or_404(Disease, id=id)
-    # print(request.user.is_superuser) 
+    # print(request.user.is_superuser)  
     return render(request, "predict/detail.html", {
-        "disease": disease
+        "disease": disease,
+        "is_adminuser" :  request.user.groups.filter(name__in = ['admin-user']).exists()
     }) 
 
 class DiseaseListView(ListView):
@@ -127,7 +128,11 @@ class DiseaseListView(ListView):
     
 class SuperUserMixins(object):
     def dispatch(self, request,*args, **kwargs):
-        if request.user.is_superuser:
+        # if request.user.is_superuser:
+        #     pass 
+        
+        # print(request.user.groups.filter(name__in = ['admin-user']).exists())
+        if request.user.groups.filter(name__in = ['admin-user']).exists():
             pass 
         else: 
             messages.success(request, "Only admin can update the details.")
@@ -147,10 +152,20 @@ class DiseaseUpdateView(SuperUserMixins, View):
         })
 
     def post(self, request, pk):
+        print("update=--")
         disease = get_object_or_404(Disease, id=pk)
         form = DiseaseForm(instance = disease, data=request.POST)
-        form.save()
-        return redirect("predict:disease_detail" ,id= pk)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'update success')
+            return redirect("predict:disease_detail" ,id= pk)
+        else:
+            return render(request, 'predict/update.html', {
+                'form': form,
+                'disease_name': disease.name,
+                "d_id": pk            
+            })
+
 
 """ Testimonials part """
 class UserTestimonialMixin(object):

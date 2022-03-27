@@ -56,9 +56,9 @@
         const formData = new FormData(this); 
         const url = $(this).attr('action'); 
  
-        for(var pair of formData.entries()) {
-            console.log(pair[0]+ ', '+ pair[1]);
-        }
+        // for(var pair of formData.entries()) {
+        //     console.log(pair[0]+ ', '+ pair[1]);
+        // }
 
         $.ajax({
             url: url,
@@ -68,24 +68,40 @@
             contentType: false,
 
             success:function(response){
-                alert("success");
+                alert("Subscribed successfully. Please check your email.");
                 location.reload();
             },
 
             error: function(response){ 
-                data = JSON.parse(response['responseText']); 
-                console.log(data)
+                data = JSON.parse(response['responseText']);  
                 if(data['errors']){
                     errors= data['errors']  
                     $('small.error').remove();
                     fields = ['name','email']
-                    for(key in errors){ 
-                        if ($(`[name="${key}Error"`).length){
-                            $(`[name="${key}Error"]`).text(errors[key]);
-                        }else{ 
-                            $(`[name="${key}"`).parent().append(`<p name="${key}Error" class="error" style="color:red; font-weight:bold;">${errors[key]}</p>`);
-                        }
+                    // console.log(errors, typeof(errors))
+                    // console.log(Object.keys(errors))
+
+                    for(let i=0; i<fields.length; i++){ 
+                        key = fields[i]
+                        if (Object.keys(errors).includes(fields[i]))
+                        {
+                            if ($(`[name="${key}Error"`).length){
+                                $(`[name="${key}Error"]`).text(errors[key]);
+                            }else{ 
+                                $(`[name="${key}"`).parent().append(`<p name="${key}Error" class="error" style="color:red; font-weight:bold;">${errors[key]}</p>`);
+                            }
+                        }else if($(`[name="${key}Error"`).length){
+                                $(`[name="${key}Error"]`).remove();
+                        }      
                     }  
+
+                    // for(key in errors){ 
+                    //     if ($(`[name="${key}Error"`).length){
+                    //         $(`[name="${key}Error"]`).text(errors[key]);
+                    //     }else{ 
+                    //         $(`[name="${key}"`).parent().append(`<p name="${key}Error" class="error" style="color:red; font-weight:bold;">${errors[key]}</p>`);
+                    //     }
+                    // }  
                 }else{
                     alert(data['data']);
                 }	

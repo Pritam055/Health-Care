@@ -1,5 +1,5 @@
-
-from django.shortcuts import redirect, render
+ 
+from django.shortcuts import redirect, render, get_object_or_404
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages
 from django.views.generic import ListView, TemplateView, View, DetailView
@@ -15,7 +15,7 @@ from numpy import insert
 from predict.models import History, Disease
 from account.forms import PdfGenForm, UserEditForm
 from account.utils import render_to_pdf
-from news.models import Post
+from news.models import Post, Subscribe
 from news.forms import NewsPostForm
 from account.decorators import onlyAllowNonAuthenticated
 
@@ -38,6 +38,12 @@ def register_user(request):
 """ History """
 class MyProfile( LoginRequiredMixin, TemplateView):
     template_name = "registration/myprofile.html"
+
+    def get_context_data(self, **kwargs) :
+        context =  super().get_context_data(**kwargs)
+        context['is_adminuser'] = self.request.user.groups.filter(name__in = ['admin-user']).exists()
+        # print(context['is_adminuser'])
+        return context 
     
 class MyHistoryView(View):
     
@@ -63,7 +69,7 @@ class HistoryDetailView( LoginRequiredMixin, DetailView):
 
 class SuperuserRequiredMixin(UserPassesTestMixin):
 
-    def test_func(self):
+    def test_func(self): 
         return self.request.user.is_superuser
 
 class HistoryListView( LoginRequiredMixin, SuperuserRequiredMixin, ListView): 
@@ -174,5 +180,29 @@ class UserEditView(LoginRequiredMixin, View):
             form.save()
             messages.success(request, 'User informations updated successfully.') 
             return JsonResponse({}, status=200)
-        
         return JsonResponse({'errors': form.errors}, status=400)
+
+""" All Disease """
+class AllSubscribersView(LoginRequiredMixin, View):
+
+    def get(self, request, *args,**kwargs):  
+        # print(Subscribe.objects.all().order_by('-id'))
+        return render(request, 'registration/admin/allSubscribers.html', {
+            'subscriber_list': Subscribe.objects.all().order_by('-id')
+        })
+
+class SubscriberDetailsView(LoginRequiredMixin, View):
+
+    def get(self, request,id, *args,**kwargs):   
+        obj = get_object_or_404(Subscribe, id= id) 
+        return render(request, 'registration/subscribeDetail.html', {
+            'subscribe': obj 
+        })
+
+class SubscriberDetailDeleteView(LoginRequiredMixin, View):
+
+    def post(self, request, id, *args,**kwargs):   
+        obj = get_object_or_404(Subscribe, id= id)
+        messages.info(request, f'{obj.email} subscribed email deleted successfully')
+        obj.delete()
+        return JsonResponse({}, status=200)

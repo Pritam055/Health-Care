@@ -21,7 +21,10 @@ urlpatterns = [
     path('admin/pdf-report-gen/', views.PdfReportReservationView2.as_view(), name='pdf_report_gen'),
     path('admin/all-news/', views.AllNewsView.as_view(), name='all_news' ),
     path('admin/add-news/', views.AddNewsView.as_view(), name='add_news'),
-    path('admin/all-disease/', views.AllDiseaseView.as_view(), name='all_disease'),    
+    path('admin/all-disease/', views.AllDiseaseView.as_view(), name='all_disease'),  
+    path('admin/all-subscribers/', views.AllSubscribersView.as_view(), name='all_subscriber'),
+    path('admin/subscriber/<int:id>/', views.SubscriberDetailsView.as_view(), name='subscriber_detail'),
+    path('admin/subscriber/delete/<int:id>/', views.SubscriberDetailDeleteView.as_view(), name='subscriber_delete'),
 
 
 

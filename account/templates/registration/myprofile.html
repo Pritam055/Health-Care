@@ -6,9 +6,14 @@
 {% block content %} 
 <div class="container-fluid" style="margin-top: 115px; width: 75%;">
     <div class="row">
-      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse">
+      <nav id="sidebarMenu" class="col-md-3 col-lg-2 d-md-block bg-light sidebar collapse" >
         <div class="position-sticky pt-3">
-          <ul class="nav flex-column">
+          <ul class="nav flex-column"> 
+              <li class="nav-item">
+                <a class="nav-link"  href="{% url 'predict:index' %}">
+                  Home
+                </a>
+              </li>  
             <li class="nav-item">
               <a class="nav-link"  href="{% url 'account:myprofile' %}">
                 My Profile
@@ -21,7 +26,7 @@
             </li>  
             </ul>
             
-            {% if request.user.is_superuser %}
+            {% if is_adminuser %}
             <h6 class="sidebar-heading d-flex justify-content-between align-items-center px-3 mt-4 mb-1 text-muted">
               <span>Saved reports</span> 
             </h6>
@@ -44,6 +49,11 @@
               <li class="nav-item">
                 <a class="nav-link" href="{% url 'account:all_news' %}" id="allNewsId"> 
                   All News
+                </a>
+              </li> 
+              <li class="nav-item">
+                <a class="nav-link" href="{% url 'account:all_subscriber' %}" id="allMailSubscribersId"> 
+                  Mail Subscribers
                 </a>
               </li> 
             </ul>
@@ -117,7 +127,48 @@
 function closeModal(){
   $('.modal').modal('hide');
 }
+// -------------all Mail Subscribers
+$('#allMailSubscribersId').on('click', function(e){
+    e.preventDefault();  
+    
+    $.get($(this).attr('href'), function(response){ 
+        $('#dataContainerId').empty().append(response);
+    });
+})
 
+$('body').on('click', '.subscriber', function(e){
+    e.preventDefault();
+    const url = $(this).attr('href'); 
+    $.get(url, function(response){ 
+        $('#historyDetailModelId .modal-content').empty().append(response);
+        $('#historyDetailModelId').modal('show');
+
+    })
+}) 
+
+$('body').on('submit', '#subscribedDeleteFormId', function(e){
+  e.preventDefault();
+  const url = $(this).attr('action');
+
+  if(confirm('Are you sure you want to delete subscriber?')){
+    $.ajax({
+      method: "POST",
+      url: url,
+      data: {
+        csrfmiddlewaretoken: "{{csrf_token}}"
+      },
+
+      success: function(response){
+        alert('Deletion success');
+        location.reload();
+      },
+      error: function(response){
+        alert(response);
+      }
+    })
+  } 
+
+})
 
 // --------------update details
 $('body').on('click', '#updateUserButtonId', function(e){

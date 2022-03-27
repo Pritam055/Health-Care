@@ -5,6 +5,7 @@ from django.http import JsonResponse
 
 from .models import Post, Subscribe
 from .forms import SubscribeForm
+from .helpers import send_subscriber_mail
 # Create your views here.
 
 """class NewsMixin(object):
@@ -19,6 +20,7 @@ class NewsHomeView(ListView):
     model = Post 
     ordering = ['-created',]
     context_object_name = "posts" 
+    paginate_by = 7
 
 class NewsDetailView(DetailView):
     model = Post 
@@ -29,15 +31,17 @@ class NewsDetailView(DetailView):
 class SubscribeView(View): 
     
     def post(self, request, *args, **kwargs):
-        form = SubscribeForm(request.POST)
-        print(form.is_valid())
+        form = SubscribeForm(request.POST) 
         if form.is_valid():
-            # form.save()
-            print(form.cleaned_data)
-            # messages.success(request, 'Subscribed successfully.')
+            form.save() 
+            try:
+                send_subscriber_mail(form.cleaned_data.get('name'), form.cleaned_data.get('email'))
+            except Exception as e: 
+                # print(e.__str__()) 
+                return JsonResponse({'data': e.__str__()}, status=400)
             return JsonResponse({}, status=200)
         
-        print(form.errors)
+        # print(form.errors)
         return JsonResponse({'errors': form.errors}, status=400)
 
 

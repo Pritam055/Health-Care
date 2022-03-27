@@ -14,7 +14,7 @@ Disease detail
 <div class="container mb-3" style="margin-top: 110px;">
     	{% if messages %}
             {% for msg in messages %}
-                <div style="color:red;" >{{msg}}</div>
+                <div class="alert alert-info" >{{msg}}</div>
             {% endfor %}
         {% endif %}
     <h2 style="color: black;">{{ disease.name }}</h2>
@@ -38,7 +38,7 @@ Disease detail
     <p>{{ disease.treatment | linebreaks }}</p>
     <hr> 
 
-    {% if request.user.is_superuser %}
+    {% if is_adminuser %}
         <a href="{% url 'predict:disease_update' pk=disease.id %}" class="btn btn-info">Update</a> 
     {% endif %}
 </div>

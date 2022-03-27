@@ -1,0 +1,34 @@
+<div class="mt-0"> 
+    <p style="font-family: 'Brush Script MT', cursive; font-size:28px; display:inline">Mail Subscribers</p> 
+    
+    </div>
+  <div class="table-responsive">
+      <table class="table table-striped">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Email</th>
+            <th scope="col"></th>  
+          </tr>
+        </thead>
+        <tbody>
+          {% for r in  subscriber_list %}
+            <tr>
+              <td>{{r.id}}</td>
+              <td>{{r.name}}</td>
+              <td>{{r.email}}</td>   
+              <td>
+                  <a href="{% url 'account:subscriber_detail' r.id %}"  style="cursor:pointer; " class="btn btn-info subscriber" >Details</button></a>
+                  <form id="subscribedDeleteFormId" data-id="{{r.id}}" action="{% url 'account:subscriber_delete' r.id %}" style="display: inline;">
+                      {% csrf_token %}    
+                      <input type="submit" value="Delete" style="cursor:pointer;" class="btn btn-danger">
+                  </form>
+              </td>
+            </tr>     
+          {% endfor %}
+        </tbody>
+      </table>
+  
+  
+  </div> 

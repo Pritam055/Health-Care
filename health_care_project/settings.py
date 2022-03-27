@@ -142,3 +142,14 @@ MEDIA_URL = "/mediafiles/"
 
 LOGIN_REDIRECT_URL = "predict:index"
 LOGOUT_REDIRECT_URL = "predict:index"
+
+
+
+# mail
+
+EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_USE_TLS = True
+EMAIL_PORT = 587
+EMAIL_HOST = 'smtp.gmail.com'
+EMAIL_HOST_USER = 'waibapritam1@gmail.com'
+EMAIL_HOST_PASSWORD = 'jvhrxwxlwcytesvw'
